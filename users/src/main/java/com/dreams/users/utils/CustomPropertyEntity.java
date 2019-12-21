@@ -32,11 +32,11 @@ public class CustomPropertyEntity<T> extends PropertyEditorSupport{
         }
         catch(UnrecognizedPropertyException propertyEx)
         {
-            response.setStatus(response.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         catch(JsonParseException parseEx)
         {
-            response.setStatus(response.SC_BAD_REQUEST);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         catch(Exception e)
         {

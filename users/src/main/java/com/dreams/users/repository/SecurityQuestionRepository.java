@@ -6,4 +6,5 @@ import com.dreams.users.entities.SecurityQuestions;
 
 public interface SecurityQuestionRepository extends CrudRepository<SecurityQuestions , Long> {
 
+	
 }

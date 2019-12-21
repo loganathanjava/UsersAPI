@@ -1,10 +1,13 @@
 package com.dreams.users.web;
 
+import javax.naming.AuthenticationException;
+import javax.naming.ServiceUnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
@@ -24,6 +27,7 @@ import com.dreams.users.repository.UserRepository;
 import com.dreams.users.service.GetUserServiceImpl;
 import com.dreams.users.service.LoginServiceImpl;
 import com.dreams.users.service.RegisterServiceImpl;
+import com.dreams.users.service.ValidateServiceImpl;
 import com.dreams.users.utils.CustomPropertyEntity;
 import com.dreams.users.utils.ServerException;
 
@@ -32,6 +36,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import sun.print.resources.serviceui;
 
 
 @RestController
@@ -44,12 +49,15 @@ public class UserController {
 	@Autowired private RegisterServiceImpl registerService;
 	@Autowired private GetUserServiceImpl getUserService;
 	@Autowired private LoginServiceImpl loginService;
+	@Autowired private ValidateServiceImpl validateService;
+	
+	@Autowired Environment env;
 	
 	@GetMapping(value = {"/", "/ping"})
 	@ApiOperation(value="check whether the service is up and working fine", response = String.class)
 	public String ping()
 	{
-		return "Users service responding properly for ping : " + System.currentTimeMillis(); 
+		return "Users service responding properly for ping : " + System.currentTimeMillis() + env.getProperty("port"); 
 	}
 	
 	@ApiOperation(value = "Register new user",
@@ -75,10 +83,20 @@ public class UserController {
  	}
  	
 	@GetMapping("{version}/user")
-	public ResponseEntity<UsersEntity> getUser(@RequestParam(name = "email",required = true) String email) {
-		UsersEntity resp = getUserService.getUser(email);
+	public ResponseEntity<UsersEntity> getUser(HttpServletRequest request,
+ 			HttpServletResponse response) throws AuthenticationException {
+		UsersEntity resp = getUserService.getUser(request);
 		return new ResponseEntity<UsersEntity>(resp, HttpStatus.OK);
 	}
+	
+	
+	@GetMapping("{version}/user/{email}")
+	public ResponseEntity<UsersEntity> getUserByEmail(HttpServletRequest request,
+ 			HttpServletResponse response, @PathVariable(name = "email") String email) throws AuthenticationException {
+		UsersEntity resp = getUserService.getUserByEmail(request, email);
+		return new ResponseEntity<UsersEntity>(resp, HttpStatus.OK);
+	}
+	
 	
 	@ApiOperation(value = "Login",
 			response = Response.class,
@@ -91,7 +109,7 @@ public class UserController {
  			@ApiParam(value="password param to authenticate the user", required = true) @RequestParam("password") String password,
  			@ApiParam(value="locale param to send response based on the response which requested") @RequestParam("locale") String locale,
  			@ApiParam(value="Api's version id") @PathVariable("version") long version,
- 			@ApiParam(value="<b>Your Api Key</b>",  required = true) @RequestHeader(value = "user-key",  required = true)String userKey)
+ 			@ApiParam(value="<b>Your Api Key</b>",  required = true) @RequestHeader(value = "user-key",  required = true) String userKey)
  			
  	{
 		Response toRet = null;
@@ -99,6 +117,18 @@ public class UserController {
  		return new ResponseEntity<Response>(toRet, HttpStatus.ACCEPTED);
  	}
 	
+	
+	
+	@GetMapping("{version}/checkquestion/{id}")
+	public ResponseEntity<Response> validateSequrityQuestion(@PathVariable(name = "id") String email,
+															@RequestParam(name = "answer") String answer,
+															@RequestParam(name = "question") String question) {
+		
+		
+		Response toRet = validateService.validateSecurityQuestion(question, answer, email);
+		
+		return new ResponseEntity<Response>(toRet,HttpStatus.OK);
+	}
 	@ApiOperation(value = "Addprivilege",
 				  notes = "This Api is used to add roles & privilege to the given user id",
 				  produces = "application/json",
@@ -168,7 +198,19 @@ public class UserController {
 	 * ;
 	 * 
 	 * return new ResponseEntity<UserResponse>(toRet, HttpStatus.OK); }
-	 */	
+	 */
+	
+	@GetMapping("{version}/testex")
+	public ResponseEntity<Response> testEx() throws ServiceUnavailableException {
+		try {
+			int x = 10;
+		    int y = x /0;
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new ServiceUnavailableException("Some ex");
+		}
+		return new ResponseEntity<Response>(new Response(), HttpStatus.ACCEPTED);
+	}
 	@InitBinder
 	public void initBinder(WebDataBinder binder,HttpServletResponse response) {
 		binder.registerCustomEditor(Register.class, new CustomPropertyEntity(Register.class,response));

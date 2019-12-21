@@ -1,8 +1,10 @@
 package com.dreams.users.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.dreams.users.entities.primarykeys.RoleBaseEntity;
@@ -17,9 +19,12 @@ import lombok.Setter;
 @Entity
 public class UserRoles extends RoleBaseEntity {
 	
+	
 	@ManyToOne
+	@JoinColumn(name = "user_id")
 	@JsonIgnore
-	private UsersEntity user;
+	private UsersEntity usersEntity;
+	
 	private String roleName;
 	
 	

@@ -1,11 +1,8 @@
 package com.dreams.users.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.dreams.users.entities.SecurityQuestions;
 import com.dreams.users.entities.UsersEntity;
 import com.dreams.users.model.Response;
 import com.dreams.users.repository.UserRepository;
@@ -23,13 +20,16 @@ public class ValidateServiceImpl {
 		try {
 			UsersEntity user = userRepo.findByEmail(email);
 			if(user != null) {
-				List<SecurityQuestions> questions = user.getSecurityQuestions();
-				for(SecurityQuestions que : questions) {
-					if(que.getQuestion().equalsIgnoreCase(question) && que.getAnswer().equalsIgnoreCase(answer)) {
-						isValid = true;
-					}
-				}
+				/*
+				 * List<SecurityQuestions> questions = user.getSecurityQuestions();
+				 * for(SecurityQuestions que : questions) {
+				 * if(que.getQuestion().equalsIgnoreCase(question) &&
+				 * que.getAnswer().equalsIgnoreCase(answer)) { isValid = true; } }
+				 */
 				
+				  isValid = user.getSecurityQuestions().stream()
+				  .anyMatch((e -> (e.getQuestion().equalsIgnoreCase(question) && e.getAnswer().equalsIgnoreCase(answer))));
+				 
 				if(isValid) {
 					toRet.setResponseCode(0);
 					toRet.setResponseMessage("Security question and answer is corret");

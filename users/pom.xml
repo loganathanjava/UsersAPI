@@ -24,11 +24,11 @@
 
 	<dependencies>
 	
-		<!-- dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency> 
-		<dependency>
+		<!-- dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency -->
@@ -48,6 +48,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -86,10 +87,10 @@
 		    <artifactId>springfox-swagger-ui</artifactId>
 		    <version>${swagger-version}</version>
 		</dependency>
-		<!-- dependency>
+		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-		</dependency -->
+		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

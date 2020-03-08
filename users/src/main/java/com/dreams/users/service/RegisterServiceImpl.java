@@ -13,6 +13,7 @@ import com.dreams.users.repository.UserRepository;
 public class RegisterServiceImpl {
 
 	@Autowired UserRepository userRepository;
+	@Autowired SendEmailNotification sendEmailNotification;
 	
 	public Response createUser(UsersEntity user) {
 		
@@ -25,8 +26,15 @@ public class RegisterServiceImpl {
 			
 			if(entity != null)
 			{
-				toRet.setResponseCode(Constants.USER_CREATE_SUCCESS_MSG);
-				toRet.setResponseMessage(Constants.USER_CREATED_SUCCESS_MSG);
+				
+				if(!sendEmailNotification.sendWelcomeMail(user)) {
+
+					toRet.setResponseCode(Constants.USER_CREATE_SUCCESS_Email_Failed_MSG);
+					toRet.setResponseMessage(Constants.USER_CREATED_SUCCESS_email_failed_MSG);
+				} else {					
+					toRet.setResponseCode(Constants.USER_CREATE_SUCCESS_MSG);
+					toRet.setResponseMessage(Constants.USER_CREATED_SUCCESS_MSG);
+				}
 			}
 			else
 			{

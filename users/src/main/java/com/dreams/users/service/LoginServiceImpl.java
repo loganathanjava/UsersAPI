@@ -53,13 +53,8 @@ public class LoginServiceImpl {
 	
 	public void generateUserCk(HttpServletResponse response, String value) {
 		logger.info("Inside generateUserCk");
-		try {
-			Date dNow = new Date(System.currentTimeMillis()+5*60*1000);
-			String val = value + "/" + dNow.getTime();
-			
-			SessionUtils.setCookie(response, "dtCk", Crypto.encrypt(val));			
-		} catch(Exception e) {
-			logger.info("Unable to set dt cookie");
-		}
+		Date dNow = new Date(System.currentTimeMillis()+5*60*1000);
+		String val = value + "/" + dNow.getTime();
+		SessionUtils.setCookie(response, "dtCk", Crypto.encrypt(val));			
 	}
 }
